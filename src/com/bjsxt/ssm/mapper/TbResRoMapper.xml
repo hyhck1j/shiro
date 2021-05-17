@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjsxt.ssm.mapper.TbResRoMapper">
+	<!-- 插入表  增加-->
+	<insert id="insertTbResRo" parameterType="com.bjsxt.ssm.bean.TbResRo" keyProperty="resourceroleid" useGeneratedKeys="true">
+		insert into tb_resource_role(resource_role_name) 
+							values(#{resourceRoleName})
+	</insert>
+	
+	<select id="selectTbResRo" parameterType="map"  resultMap="resourceroleidmap">
+		select * from tb_resource_role where resource_role_id=#{resourceRoleId}
+	</select>
+<!-- 	查询 含分页 
+	<select id="selectPaginatedArticle" parameterType="map" resultMap="articlemap">
+		select * from cms_article limit #{minNum}, #{size}
+	</select>
+	查询 数据总条数
+	
+	<select id="selectArticleCount" resultType="int">
+		SELECT COUNT(*) FROM  cms_article
+	</select> -->
+	
+	<delete id="deleteTbResRo" parameterType="map" >
+		delete from tb_resource_role where resource_role_id=#{resourceRoleId}
+	</delete>
+	
+	<update id="updateTbResRo" parameterType="map"  >
+		update tb_resource_role  set	resource_role_name =#{resourceRoleName} 
+								where resource_role_id=#{resourceRoleId}
+								
+	</update>
+	
+	<resultMap type="com.bjsxt.ssm.bean.TbResRo" id="resourceroleidmap">
+		<id column="resource_role_id" property="resourceRoleId"/>
+		<result column="resource_role_name" property="resourceRoleName"/>
+		<result column="res_role_id" property="resRoleId"/>
+		
+	</resultMap>
+	
+</mapper>

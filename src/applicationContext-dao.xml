@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	
+	 <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		 	<property name="driverClassName" value="${jdbc.driver}" />
+			<property name="url" value="${jdbc.url}" />
+			<property name="username" value="${jdbc.user}" />
+			<property name="password" value="${jdbc.password}" />
+	     </bean>
+	
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 给sessionFactory注入数据源 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 给sessionFactory指定mybatis的配置文件 -->
+		<!-- <property name="configLocation" value="classpath:sample/mybatis-config.xml" 
+			/> -->
+	</bean>
+
+	<!-- 迭代地扫描指定的包 根据mapper的java文件和mapper的xml文件，自动生成mapper的实现类对象，放到spring中 放到spring中的实现类对象的id是接口的名称首字母小写 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.bjsxt.ssm.mapper" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+		<!-- 下面这个不能用，因为这个扫描器启动太早了，比数据源启动好的都早，所以在使用sessionFactory的时候，它还没有初始化好，就会报错 -->
+		<!-- <property name="sqlSessionFactory" ref="sqlSessionFactory" /> -->
+	</bean>
+
+
+<!-- messagesource -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>config</value>
+				<value>classpath:messages</value>  
+            	<value>classpath:org/hibernate/validator/ValidationMessages</value>
+			</list>
+		</property>
+		<property name="useCodeAsDefaultMessage" value="true" />
+		<property name="defaultEncoding" value="UTF-8"/>  
+    	<property name="cacheSeconds" value="60"/>
+	</bean>
+	<!-- validator -->
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
+		<property name="validationMessageSource" ref="messageSource" />
+	</bean>
+
+
+</beans>

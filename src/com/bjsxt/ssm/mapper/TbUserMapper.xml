@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjsxt.ssm.mapper.TbUserMapper">
+	<!-- 插入表  增加-->
+	<insert id="insertTbUser" parameterType="com.bjsxt.ssm.bean.TbUser" keyProperty="userid" useGeneratedKeys="true">
+		insert into tb_user(user_name,user_pwd) 
+							values(#{userName},#{userPwd})
+	</insert>
+	
+	<select id="selectTbUser" parameterType="map"  resultMap="useridmap">
+		select * from tb_user where user_id=#{userId}
+	</select>
+<!-- 	查询 含分页 
+	<select id="selectPaginatedArticle" parameterType="map" resultMap="articlemap">
+		select * from cms_article limit #{minNum}, #{size}
+	</select>
+	查询 数据总条数
+	
+	<select id="selectArticleCount" resultType="int">
+		SELECT COUNT(*) FROM  cms_article
+	</select> -->
+	
+	<delete id="deleteTbUser" parameterType="map" >
+		delete from tb_user where user_id=#{userId}
+	</delete>
+	
+	<update id="updateTbUser" parameterType="map"  >
+		update tb_user  set	user_name =#{userName} ,
+							user_pwd=#{userPwd}
+							
+						
+								where user_id=#{userId}
+								
+	</update>
+	
+	<resultMap type="com.bjsxt.ssm.bean.TbUser" id="useridmap">
+		<id column="user_id" property="userId"/>
+		<result column="user_name" property="userName"/>
+		<result column="user_pwd" property="userPwd"/>
+		
+	</resultMap>
+	
+</mapper>

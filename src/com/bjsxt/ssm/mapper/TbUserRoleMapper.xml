@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjsxt.ssm.mapper.TbUserRoleMapper">
+	<!-- 插入表  增加-->
+	<insert id="insertTbUserRole" parameterType="com.bjsxt.ssm.bean.TbUserRole" keyProperty="urid" useGeneratedKeys="true">
+		insert into tb_user_role(user_role_name) 
+							values(#{userRoleName})
+	</insert>
+	
+	<select id="selectTbUserRole" parameterType="map"  resultMap="uridmap">
+		select * from tb_user_role where ur_id=#{urId}
+	</select>
+<!-- 	查询 含分页 
+	<select id="selectPaginatedArticle" parameterType="map" resultMap="articlemap">
+		select * from cms_article limit #{minNum}, #{size}
+	</select>
+	查询 数据总条数
+	
+	<select id="selectArticleCount" resultType="int">
+		SELECT COUNT(*) FROM  cms_article
+	</select> -->
+	
+	<delete id="deleteTbUserRole" parameterType="map" >
+		delete from tb_user_role where ur_id=#{urId}
+	</delete>
+	
+	<update id="updateTbUserRole" parameterType="map"  >
+		update tb_user_role  set	user_role_name =#{userRoleName} 
+								where ur_id=#{urId}
+								
+	</update>
+	
+	<resultMap type="com.bjsxt.ssm.bean.TbUserRole" id="uridmap">
+		<id column="user_role_id" property="UserRoleId"/>
+		<result column="user_role_name" property="userRoleName"/>
+		<result column="user_role_id" property="userRoleId"/>
+		
+	</resultMap>
+	
+</mapper>
