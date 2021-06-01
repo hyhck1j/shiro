@@ -1,5 +1,11 @@
 package com.bjsxt.ssm.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -9,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bjsxt.ssm.bean.TbUser;
 import com.bjsxt.ssm.mapper.TbUserMapper;
 import com.bjsxt.ssm.service.TbUserService;
-
 
 @Service
 public class TbUserServiceImpl implements TbUserService {
@@ -28,90 +33,57 @@ public class TbUserServiceImpl implements TbUserService {
 	}
 
 	@Override
-	@Transactional(isolation=Isolation.DEFAULT, propagation=Propagation.REQUIRED)
+	@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED)
 	public int saveTbUser(TbUser user) {
+
+		// 对象判空
+		if (null == user) {
+			// TODO 抛异常
+			return -1;
+		}
+		// 对象属性判空
+		if (StringUtils.isBlank(user.getUserName())
+				|| StringUtils.isBlank(user.getUserPwd())) {
+			// TODO 抛异常
+			return -1;
+		}
+		/***
+		 * 检查用户名是否已注册过
+		 */
+		List<TbUser> users = tbUserMapper.selectTbUserByUserName(user
+				.getUserName());
+		if (CollectionUtils.isNotEmpty(users)) {
+			return -1;
+		}
+
 		this.tbUserMapper.insertTbUser(user);
 		return user.getUserId();
 	}
 
 	@Override
 	public TbUser selectTbUser(int userid) {
-		
+
 		return tbUserMapper.selectTbUser(userid);
 	}
-	
-//	@Override
-//	@Transactional(isolation=Isolation.DEFAULT, propagation=Propagation.REQUIRED)
-////	public int saveTbUser(TbUser userid) {
-////		this.tbUserMapper.insertTbUser(userid);
-////		return userid.getUserId();
-////	}
-//	
-///**
-// * 分页
-// * pageNum当前第几页
-// * pagesize每页多少条
-// * ((pageNum - 1) * pageSize); (当前页面-1)  乘   每页条数
-// * 
-// */
-//	@Override
-//	@Transactional(isolation=Isolation.DEFAULT, propagation=Propagation.REQUIRED, readOnly=true, rollbackFor=Exception.class)
-//	public List<Article> selectPaginatedArticle(int pageNum, int pageSize) {
-//		Map<String, Integer> articeMap = new HashMap<>();
-//		articeMap.put("minNum", (pageNum - 1) * pageSize);
-//		articeMap.put("size", pageSize);
-//		return this.articleMapper.selectPaginatedArticle(articeMap);
-//	}
-//
-//
-//	@Override
-//	public void updateArticle(Article articleTitle) {
-//		this.articleMapper.updateArticle(articleTitle);
-//		
-//	}
-//
-//
-//	@Override
-//	public void deleteArticle(long article) {
-//		this.articleMapper.deleteArticle(article);
-//		
-//	}
-//	
-//	public Article selectArticle(long article) {
-//		return articleMapper.selectArticle(article);
-//		
-//	}
-//
-//	@Override
-//	public int selectArticleCount() {
-//		// TODO Auto-generated method stub
-//		  return articleMapper.selectArticleCount();
-//	}
-//
-//	@Override
-//	public void updateTbUser(TbUser username) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void deleteTbUser(int userid) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public int saveTbUser(TbUser user) {
-//		// TODO Auto-generated method stub
-//		return 0;
-//	}
-//
-//	@Override
-//	public TbUser selectTbUser(int userid) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
 
+	@Override
+	public int queryCount() {
+		int rst = tbUserMapper.queryTbUserCount();
+		return rst;
+	}
+
+	@Override
+	public List<TbUser> pagination(Integer pageSize, Integer page) {
+
+		if (0 >= pageSize || 0 >= page) {
+			return null;
+		}
+		int limit = (page - 1) * pageSize;
+		Map<String, Integer> query = new HashMap<>();
+		query.put("pageSize", pageSize);
+		query.put("limit", limit);
+		List<TbUser> rst = tbUserMapper.pagination(query);
+		return rst;
+	}
 
 }

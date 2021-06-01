@@ -16,6 +16,9 @@
   <meta name="apple-mobile-web-app-title" content="Amaze UI" />
   <link rel="stylesheet" href="../../assets/css/amazeui.min.css"/>
   <link rel="stylesheet" href="../../assets/css/admin.css">
+  
+  <!-- 分页css资源 -->
+  <link href="../../assets/pagination/pagination.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <!--[if lte IE 9]>
@@ -78,16 +81,31 @@
 
       <ul class="am-avg-sm-1 am-avg-md-4 am-margin am-padding am-text-center admin-content-list ">
         <li><a href="../../admin/user/add.do" class="am-text-success">新增</a></li>
-        <li><a href="javascript:void(0);" class="am-text-warning">删除</a></li>
+        <li><a href="javascript:void(0);" class="am-text-warning del">删除</a></li>
         <li><a href="javascript:void(0);" class="am-text-secondary">设置角色</a></li>
       </ul>
 
       <div class="am-g">
         <div class="am-u-sm-12">
-          
+          	<table class="am-table am-table-bordered am-table-striped am-table-compact">
+			  <thead>
+			  <tr>
+			    <th><input type="checkbox" class="all"/></th>
+			    <th>登陆账号</th>
+			    <th>登陆密码</th>
+			    <th>操作</th>
+			  </tr>
+			  </thead>
+			  <tbody id="data-container">
+			  </tbody>
+			</table>
         </div>
       </div>
-
+	  <div class="am-g">
+        <div class="am-u-sm-12">
+        	<div id="pagination-page"></div>
+        </div>
+      </div>
     </div>
 
     <footer class="admin-content-footer">
@@ -110,5 +128,98 @@
 <!--<![endif]-->
 <script src="../../assets/js/amazeui.min.js"></script>
 <script src="../../assets/js/app.js"></script>
+<!-- 分页js资源 -->
+<script src="../../assets/pagination/pagination.js"></script>
+<!-- 模板js资源 -->
+<script src="../../assets/artTemplate/template.js"></script>
+
+
+<script type="text/template" id="user-data-tpl">
+{{if rows}}
+	{{each rows as row i}}
+		<tr>
+			<td><input type="checkbox" class="item" data-id="{{row.userId}}"/></td>
+			<td>{{row.userName}}</td>
+			<td>{{row.userPwd}}</td>
+			<td><button type="button" class="am-btn am-btn-primary user-edit" data-id="{{row.userId}}">修改</button></td>
+		</tr>
+	{{/each}}
+{{/if}}
+</script>
+
+
+<script type="text/javascript">
+$(function(){
+	var dataContainer = $("#data-container") ;
+	
+	$('#pagination-page').pagination({
+		/* alias: {
+			pageNumber: 'pageNumber',
+			pageSize: 'pageSize'
+		}, */
+	    dataSource: '../../admin/user/pagination.do',
+	    locator: 'data',
+	    totalNumber: '${totalNumber}',
+	    pageSize: 2,
+	    ajax: {
+	        beforeSend: function(){
+	        	$('.all').prop("checked",false);
+	        	dataContainer.html('正在加载数据 ...');
+	        }
+	    },
+	    callback: function(data, pagination){
+	    	template.config('escape', false) ;
+	    	var gridRows = template('user-data-tpl',{'rows': data || []}) ;	
+	    	dataContainer.html(gridRows);
+	    	
+	    	$('.user-edit').off('click').on('click',function(){
+	    		var id = $(this).attr('data-id') ;
+	    		alert(id) ;
+	    	});
+	      
+	    	$('.item').off('click').on('click',function(){
+	    		var checked = $(".item[type='checkbox']:checked").length ;
+	    		var checkbox = $(".item[type='checkbox']").length ;
+	    		if(checked == checkbox && checked > 0){
+	    			$('.all').prop("checked",true);
+	    		}else{
+	    			$('.all').prop("checked",false);
+	    		}
+	    	});
+	    }
+	});
+	
+	/**全选Or全不选*/
+	$('.all').off('click').on('click',function(){
+		var $this = $(this) ;
+		if($this.prop('checked')){
+			$('.item').prop("checked",true);
+		}else{
+			$('.item').prop("checked",false);
+		}
+	});
+	/**删除*/
+	$('.del').off('click').on('click',function(){
+		var checked = $(".item[type='checkbox']:checked").length ;
+		if(checked == 0){
+			alert('你暂未选择要删除的数据');
+			return  ;
+		}
+		
+		if(confirm("数据删除后无法恢复，您确认要删除吗?")){
+			var ids=[] ;
+			$(".item[type='checkbox']:checked").each(function(i ,item){
+				var $this = $(item) ;
+				var id = $this.attr('data-id') ;
+				ids.push(id) ;
+			});
+			
+			console.debug(ids.join(',')) ;
+		}
+		
+		
+	});
+});
+</script>
 </body>
 </html>

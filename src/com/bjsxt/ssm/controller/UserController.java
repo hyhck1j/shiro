@@ -1,14 +1,14 @@
 package com.bjsxt.ssm.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.catalina.User;
-import org.fusesource.mqtt.codec.PUBLISH;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bjsxt.ssm.Constant;
@@ -25,7 +25,11 @@ public class UserController {
 
 	/** 跳转到列表页面 */
 	@RequestMapping("/list.do")
-	public String list() {
+	public String list(ModelMap view) {
+
+		int totalNumber = tbuserservice.queryCount();
+		view.addAttribute("totalNumber", totalNumber);
+
 		return "user/list";
 	}
 
@@ -41,16 +45,57 @@ public class UserController {
 		return "user/edit";
 	}
 
-	@RequestMapping("/save")
+	@RequestMapping("/save.do")
 	@ResponseBody
-	public Rst save(User user) {
+	public Rst save(TbUser user) {
 		Rst rst = new Rst();
 
-		if(null == user){
+		if (null == user) {
 			rst.setCode(Constant.ERROR);
 			rst.setMessage("用户信息不能为空");
+			return rst;
 		}
-		
+
+		int userId = tbuserservice.saveTbUser(user);
+		if (0 < userId) {
+			rst.setCode(Constant.SUCCESS);
+			rst.setMessage("新增成功");
+		} else {
+			rst.setCode(Constant.ERROR);
+			rst.setMessage("新增失败");
+		}
+		return rst;
+	}
+
+	/**
+	 * 
+	 * @param pageSize
+	 *            每页数据个数
+	 * @param page
+	 *            页码
+	 * @return
+	 */
+	@RequestMapping("/pagination.do")
+	@ResponseBody
+	public Rst pagination(Integer pageSize,
+			@RequestParam(value = "pageNumber") Integer page) {
+		Rst rst = new Rst();
+
+		if (0 >= pageSize || 0 >= page) {
+			rst.setCode(Constant.ERROR);
+			rst.setMessage("参数错误");
+			return rst;
+		}
+
+		List<TbUser> list = tbuserservice.pagination(pageSize, page);
+
+		rst.setCode(Constant.SUCCESS);
+		rst.setMessage("获取成功");
+		if (CollectionUtils.isNotEmpty(list)) {
+			rst.setData(list);
+		} else {
+			rst.setData(new ArrayList<>());
+		}
 		return rst;
 	}
 }

@@ -141,10 +141,17 @@ $(function(){
 		var formData = $("#addForm").serialize();
 		console.debug(formData) ;
 		
-		$.post('../../admin/user/save',formData,function(rst){
-			
-		})
-	})
+		$.post('../../admin/user/save.do',formData,function(rst){
+			console.debug(rst) ;
+			if(rst.code == 'error'){
+				alert(rst.message) ;
+			}else{
+				if(confirm(rst.message +" ,您是否要跳转到列表页面")){
+					window.location.href="../../admin/user/list.do";
+				}
+			}
+		});
+	});
 });
 </script>
 
