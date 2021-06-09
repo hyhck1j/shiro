@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bjsxt.ssm.Constant;
 import com.bjsxt.ssm.bean.TbUser;
 import com.bjsxt.ssm.mapper.TbUserMapper;
 import com.bjsxt.ssm.service.TbUserService;
@@ -23,8 +25,40 @@ public class TbUserServiceImpl implements TbUserService {
 	private TbUserMapper tbUserMapper;
 
 	@Override
-	public void updateTbUser(TbUser username) {
-		this.tbUserMapper.updateTbUser(username);
+	public int updateTbUser(TbUser tbUser) {
+
+		if (null == tbUser) {
+			return -1;
+		}
+		if (0 >= tbUser.getUserId()) {
+			return -1;
+		}
+		// 对象属性判空
+		if (StringUtils.isBlank(tbUser.getUserName())
+				|| StringUtils.isBlank(tbUser.getUserPwd())) {
+			// TODO 抛异常
+			return -1;
+		}
+
+		TbUser orginal = tbUserMapper.selectTbUser(tbUser.getUserId());
+		if (null == orginal) {
+			return -1;
+		}
+
+		if (!orginal.getUserName().equals(tbUser.getUserName())) {
+			/***
+			 * 检查用户名是否已注册过
+			 */
+			List<TbUser> users = tbUserMapper.selectTbUserByUserName(tbUser
+					.getUserName());
+			if (CollectionUtils.isNotEmpty(users)) {
+				return -1;
+			}
+		}
+
+		this.tbUserMapper.updateTbUser(tbUser);
+
+		return 1;
 	}
 
 	@Override
@@ -47,6 +81,12 @@ public class TbUserServiceImpl implements TbUserService {
 			// TODO 抛异常
 			return -1;
 		}
+		// 对象的主键（userId）判空
+		if (0 < user.getUserId()) {
+			// TODO 抛异常
+			return -1;
+		}
+
 		/***
 		 * 检查用户名是否已注册过
 		 */
@@ -84,6 +124,20 @@ public class TbUserServiceImpl implements TbUserService {
 		query.put("limit", limit);
 		List<TbUser> rst = tbUserMapper.pagination(query);
 		return rst;
+	}
+
+	@Override
+	public int deleteTbUsers(Integer[] userIds) {
+		if (ArrayUtils.isEmpty(userIds)) {
+			return -1;
+		}
+		int i = 0 ;
+		for (Integer id : userIds) {
+			tbUserMapper.deleteTbUser(id);
+			i++ ;
+		}
+
+		return i;
 	}
 
 }

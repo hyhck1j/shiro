@@ -6,9 +6,7 @@ import com.bjsxt.ssm.bean.TbUser;
 
 public interface TbUserService {
 
-	// List<Article> selectPaginatedArticle(int pageNum, int pageSize);
-
-	void updateTbUser(TbUser username);
+	int updateTbUser(TbUser tbUser);
 
 	void deleteTbUser(int userid);
 
@@ -19,5 +17,7 @@ public interface TbUserService {
 	int queryCount();
 
 	List<TbUser> pagination(Integer pageSize, Integer page);
+
+	int deleteTbUsers(Integer[] userIds);
 
 }

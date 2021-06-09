@@ -1,12 +1,15 @@
 package com.bjsxt.ssm.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,8 +43,11 @@ public class UserController {
 	}
 
 	/** 跳转到修改页面 */
-	@RequestMapping("/edit.do")
-	public String edit() {
+	@RequestMapping("/edit/{userId}.do")
+	public String edit(@PathVariable Integer userId, ModelMap view) {
+
+		TbUser tbUser = tbuserservice.selectTbUser(userId);
+		view.addAttribute("tbUser", tbUser);
 		return "user/edit";
 	}
 
@@ -98,4 +104,48 @@ public class UserController {
 		}
 		return rst;
 	}
+
+	@RequestMapping("/update.do")
+	@ResponseBody
+	public Rst update(TbUser user) {
+		Rst rst = new Rst();
+
+		if (null == user) {
+			rst.setCode(Constant.ERROR);
+			rst.setMessage("用户信息不能为空");
+			return rst;
+		}
+
+		int state = tbuserservice.updateTbUser(user);
+		if (0 < state) {
+			rst.setCode(Constant.SUCCESS);
+			rst.setMessage("修改成功");
+		} else {
+			rst.setCode(Constant.ERROR);
+			rst.setMessage("修改失败");
+		}
+		return rst;
+	}
+
+	@RequestMapping("/del.do")
+	@ResponseBody
+	public Rst del(Integer[] userIds) {
+		Rst rst = new Rst();
+
+		if (ArrayUtils.isEmpty(userIds)) {
+			rst.setCode(Constant.ERROR);
+			rst.setMessage("参数错误,删除失败");
+		}
+		int state = tbuserservice.deleteTbUsers(userIds);
+
+		if (0 < state) {
+			rst.setCode(Constant.SUCCESS);
+			rst.setMessage("成功删除【" + state + "】条数据");
+		} else {
+			rst.setCode(Constant.ERROR);
+			rst.setMessage("删除失败");
+		}
+		return rst;
+	}
+
 }

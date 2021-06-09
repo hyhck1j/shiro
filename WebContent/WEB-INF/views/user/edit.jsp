@@ -11,11 +11,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="renderer" content="webkit">
   <meta http-equiv="Cache-Control" content="no-siteapp" />
-  <link rel="icon" type="image/png" href="../../assets/i/favicon.png">
-  <link rel="apple-touch-icon-precomposed" href="../../assets/i/app-icon72x72@2x.png">
+  <link rel="icon" type="image/png" href="/assets/i/favicon.png">
+  <link rel="apple-touch-icon-precomposed" href="/assets/i/app-icon72x72@2x.png">
   <meta name="apple-mobile-web-app-title" content="Amaze UI" />
-  <link rel="stylesheet" href="../../assets/css/amazeui.min.css"/>
-  <link rel="stylesheet" href="../../assets/css/admin.css">
+  <link rel="stylesheet" href="/assets/css/amazeui.min.css"/>
+  <link rel="stylesheet" href="/assets/css/admin.css">
 </head>
 <body>
 <!--[if lte IE 9]>
@@ -58,7 +58,7 @@
           <a class="am-cf" data-am-collapse="{target: '#collapse-nav'}">
           <span class="am-icon-file"></span> 系统管理 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
           <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav">
-            <li><a href="../../admin/user/list.do" class="am-cf"><span class="am-icon-check"></span> 用户管理</a></li>
+            <li><a href="/admin/user/list.do" class="am-cf am-active"><span class="am-icon-check"></span> 用户管理</a></li>
             <li><a href="admin-help.html"><span class="am-icon-puzzle-piece"></span> 角色管理</a></li>
             <li><a href="admin-gallery.html"><span class="am-icon-th"></span> 资源管理</a></li>
           </ul>
@@ -73,19 +73,43 @@
   <div class="admin-content">
     <div class="admin-content-body">
       <div class="am-cf am-padding">
-        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">首页</strong> / <small>一些常用模块</small></div>
+        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">首页</strong> / <small><a href="/admin/user/list.do">用户管理</a></small> / <small>编辑用户</small></div>
       </div>
-
-      <ul class="am-avg-sm-1 am-avg-md-4 am-margin am-padding am-text-center admin-content-list ">
-        <li><a href="#" class="am-text-success"><span class="am-icon-btn am-icon-file-text"></span><br/>新增页面<br/>2300</a></li>
-        <li><a href="#" class="am-text-warning"><span class="am-icon-btn am-icon-briefcase"></span><br/>成交订单<br/>308</a></li>
-        <li><a href="#" class="am-text-danger"><span class="am-icon-btn am-icon-recycle"></span><br/>昨日访问<br/>80082</a></li>
-        <li><a href="#" class="am-text-secondary"><span class="am-icon-btn am-icon-user-md"></span><br/>在线用户<br/>3000</a></li>
-      </ul>
-
+      <hr>
       <div class="am-g">
         <div class="am-u-sm-12">
-          
+          <form class="am-form am-form-horizontal" id="editForm">
+            <div class="am-form-group">
+              <label for="userName" class="am-u-sm-3 am-form-label">登陆账号</label>
+              <div class="am-u-sm-9">
+                <input type="text" id="userName" name="userName" placeholder="登陆账号" value="${tbUser.userName }">
+                <input type="hidden" id="userId" name="userId" placeholder="登陆账号编号" value="${tbUser.userId }">
+                
+                <small>输入你的登陆账号，让我们记住你。</small>
+              </div>
+            </div>
+
+            <div class="am-form-group">
+              <label for="userPwd" class="am-u-sm-3 am-form-label">登陆密码</label>
+              <div class="am-u-sm-9">
+                <input type="password" id="userPwd" name="userPwd" placeholder="登陆密码" value="${tbUser.userPwd }">
+                <small>登陆密码你懂得...</small>
+              </div>
+            </div>
+
+            <div class="am-form-group">
+              <label for="userPwd2" class="am-u-sm-3 am-form-label">验证密码</label>
+              <div class="am-u-sm-9">
+                <input type="password" id="userPwd2" name="userPwd2" placeholder="验证密码">
+              </div>
+            </div>
+
+            <div class="am-form-group">
+              <div class="am-u-sm-9 am-u-sm-push-3">
+                <button type="button" class="am-btn am-btn-primary" id="edit">保存</button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -109,7 +133,29 @@
 
 <!--[if (gte IE 9)|!(IE)]><!-->
 <!--<![endif]-->
-<script src="../../assets/js/amazeui.min.js"></script>
-<script src="../../assets/js/app.js"></script>
+<script src="/assets/js/amazeui.min.js"></script>
+<script src="/assets/js/app.js"></script>
+
+<script type="text/javascript">
+
+$(function(){
+	$('#edit').on('click',function(){
+		var formData = $("#editForm").serialize();
+		console.debug(formData) ;
+		
+		$.post('/admin/user/update.do',formData,function(rst){
+			console.debug(rst) ;
+			if(rst.code == 'error'){
+				alert(rst.message) ;
+			}else{
+				if(confirm(rst.message +" ,您是否要跳转到列表页面")){
+					window.location.href="/admin/user/list.do";
+				}
+			}
+		});
+	});
+});
+</script>
+
 </body>
 </html>

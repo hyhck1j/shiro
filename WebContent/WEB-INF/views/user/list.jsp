@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="renderer" content="webkit">
   <meta http-equiv="Cache-Control" content="no-siteapp" />
-  <link rel="icon" type="image/png" href="../../assets/i/favicon.png">
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
   <link rel="apple-touch-icon-precomposed" href="../../assets/i/app-icon72x72@2x.png">
   <meta name="apple-mobile-web-app-title" content="Amaze UI" />
   <link rel="stylesheet" href="../../assets/css/amazeui.min.css"/>
@@ -141,7 +141,7 @@
 			<td><input type="checkbox" class="item" data-id="{{row.userId}}"/></td>
 			<td>{{row.userName}}</td>
 			<td>{{row.userPwd}}</td>
-			<td><button type="button" class="am-btn am-btn-primary user-edit" data-id="{{row.userId}}">修改</button></td>
+			<td><a href="../../admin/user/edit/{{row.userId}}.do" class="am-btn am-btn-primary user-edit" data-id="{{row.userId}}">编辑</a></td>
 		</tr>
 	{{/each}}
 {{/if}}
@@ -161,6 +161,8 @@ $(function(){
 	    locator: 'data',
 	    totalNumber: '${totalNumber}',
 	    pageSize: 2,
+	    showGoInput: true,
+	    showGoButton: true,
 	    ajax: {
 	        beforeSend: function(){
 	        	$('.all').prop("checked",false);
@@ -172,11 +174,6 @@ $(function(){
 	    	var gridRows = template('user-data-tpl',{'rows': data || []}) ;	
 	    	dataContainer.html(gridRows);
 	    	
-	    	$('.user-edit').off('click').on('click',function(){
-	    		var id = $(this).attr('data-id') ;
-	    		alert(id) ;
-	    	});
-	      
 	    	$('.item').off('click').on('click',function(){
 	    		var checked = $(".item[type='checkbox']:checked").length ;
 	    		var checkbox = $(".item[type='checkbox']").length ;
@@ -215,6 +212,16 @@ $(function(){
 			});
 			
 			console.debug(ids.join(',')) ;
+			
+			$.post('/admin/user/del.do',{userIds:ids.join(',')},function(res){
+				console.debug(res) ;
+				if(res.code == 'error'){
+					alert(res.message) ;
+				}else{
+					alert(res.message) ;
+					window.location.href="/admin/user/list.do";
+				}
+			});
 		}
 		
 		
