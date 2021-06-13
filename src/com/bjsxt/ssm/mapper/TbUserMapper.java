@@ -9,7 +9,7 @@ public interface TbUserMapper {
 
 	void insertTbUser(TbUser user);
 
-	TbUser selectTbUser(TbUser user);
+	//TbUser selectTbUser(TbUser user);
 
 	void deleteTbUser(int userid);
 

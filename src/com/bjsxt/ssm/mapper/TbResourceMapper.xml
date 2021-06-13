@@ -3,7 +3,12 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bjsxt.ssm.mapper.TbResourceMapper">
 	<!-- 插入表  增加-->
-	<insert id="insertTbResource" parameterType="com.bjsxt.ssm.bean.TbResource" keyProperty="resourceid" useGeneratedKeys="true">
+	<insert id="insertTbResource" parameterType="com.bjsxt.ssm.bean.TbResource" >
+		
+		<selectKey resultType="int" keyProperty="resourceId">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+			
 		insert into tb_resource(resource_name,resource_url) 
 							values(#{resourceName},#{resourceUrl})
 	</insert>
@@ -11,15 +16,17 @@
 	<select id="selectTbResource" parameterType="map"  resultMap="resourceidmap">
 		select * from tb_resource where resource_id=#{resourceId}
 	</select>
-<!-- 	查询 含分页 
-	<select id="selectPaginatedArticle" parameterType="map" resultMap="articlemap">
-		select * from cms_article limit #{minNum}, #{size}
+	<select id="selectTbResourceByResourceName" parameterType="map" resultMap="resourceidmap">
+		SELECT * FROM  tb_resource WHERE resource_name=#{resourceName}
 	</select>
-	查询 数据总条数
 	
-	<select id="selectArticleCount" resultType="int">
-		SELECT COUNT(*) FROM  cms_article
-	</select> -->
+	<select id="pagination" parameterType="map" resultMap="resourceidmap">
+		select * from tb_resource limit #{limit}, #{pageSize}
+	</select>	
+	
+	<select id="queryTbResourceCount" resultType="int">
+		SELECT count(*) FROM  tb_resource WHERE 1=1
+	</select>
 	
 	<delete id="deleteTbResource" parameterType="map" >
 		delete from tb_resource where resource_id=#{resourceId}

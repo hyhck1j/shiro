@@ -3,7 +3,10 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bjsxt.ssm.mapper.TbRoleMapper">
 	<!-- 插入表  增加-->
-	<insert id="insertTbRole" parameterType="com.bjsxt.ssm.bean.TbRole" keyProperty="roleid" useGeneratedKeys="true">
+	<insert id="insertTbRole" parameterType="com.bjsxt.ssm.bean.TbRole" >
+		<selectKey resultType="int" keyProperty="roleId">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 		insert into tb_role(role_name) 
 							values(#{roleName})
 	</insert>
@@ -11,15 +14,18 @@
 	<select id="selectTbRole" parameterType="map"  resultMap="roleidmap">
 		select * from tb_role where role_id=#{roleId}
 	</select>
-<!-- 	查询 含分页 
-	<select id="selectPaginatedArticle" parameterType="map" resultMap="articlemap">
-		select * from cms_article limit #{minNum}, #{size}
+
+	<select id="pagination" parameterType="map" resultMap="roleidmap">
+		select * from tb_role limit #{limit}, #{pageSize}
 	</select>
-	查询 数据总条数
 	
-	<select id="selectArticleCount" resultType="int">
-		SELECT COUNT(*) FROM  cms_article
-	</select> -->
+	<select id="selectTbRoleByRoleName" parameterType="map" resultMap="roleidmap">
+		SELECT * FROM  tb_role WHERE role_name=#{roleName}
+	</select>
+	
+	<select id="queryTbRoleCount" resultType="int">
+		SELECT count(*) FROM  tb_role WHERE 1=1
+	</select>
 	
 	<delete id="deleteTbRole" parameterType="map" >
 		delete from tb_role where role_id=#{roleId}

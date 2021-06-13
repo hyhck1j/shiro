@@ -59,8 +59,8 @@
           <span class="am-icon-file"></span> 系统管理 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
           <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav">
             <li><a href="../../admin/user/list.do" class="am-cf"><span class="am-icon-check"></span> 用户管理</a></li>
-            <li><a href="admin-help.html"><span class="am-icon-puzzle-piece"></span> 角色管理</a></li>
-            <li><a href="admin-gallery.html"><span class="am-icon-th"></span> 资源管理</a></li>
+            <li><a href="../../admin/role/list.do"><span class="am-icon-puzzle-piece"></span> 角色管理</a></li>
+            <li><a href="../../admin/resource/list.do" ><span class="am-icon-th"></span> 资源管理</a></li>
           </ul>
         </li>
       </ul>
